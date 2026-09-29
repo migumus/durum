@@ -1,0 +1,25 @@
+# GitHub, 60 gun hic degisiklik olmayan acik depolarda zamanlanmis isleri
+# KENDILIGINDEN kapatiyor; yokla.yml sessizce durur ve kimse fark etmez.
+# Ayda bir bu dosyaya tarih yazan kucuk bir commit bunu onluyor.
+name: canli-tut
+
+on:
+  schedule:
+    - cron: "17 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+      - run: |
+          date -u +%F > son-canli-tut.txt
+          git config user.name "durum-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add son-canli-tut.txt
+          git commit -m "canli tut: $(date -u +%F)" && git push

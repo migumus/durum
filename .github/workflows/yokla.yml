@@ -1,0 +1,43 @@
+# Sitelerin disaridan yoklamasi.
+#
+# NEDEN BURADA: sunucunun kendi izlemesi (sunucu/scripts/izle.py) sunucu
+# tamamen durdugunda calisamaz. Bu is GitHub'da calisiyor; bir adres
+# cevap vermezse is BASARISIZ olur ve GitHub depo sahibine e-posta atar
+# (Settings > Notifications > Actions: "Send notifications for failed
+# workflows only").
+#
+# Depo herkese acik: acik depolarda GitHub Actions dakikasi ucretsiz.
+# Burada sir yok; yalnizca zaten herkese acik adresler var.
+name: yokla
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  yokla:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Siteler
+        run: |
+          set -u
+          hata=0
+          kontrol() {
+            # Anlik bir aksaklik icin alarm olmasin: 3 deneme, 20 sn arayla.
+            for i in 1 2 3; do
+              kod=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$1" || true)
+              case " $2 " in *" $kod "*) echo "ok   $kod $1"; return 0 ;; esac
+              sleep 20
+            done
+            echo "::error::$1 -> $kod (beklenen: $2)"; hata=1
+          }
+          kontrol https://ontrac.tr/tr "200"
+          kontrol https://c.ontrac.tr/tr/signin "200"
+          kontrol https://incuba.tr/tr "200"
+          kontrol https://api.ontrac.tr/rest/v1/ "401"
+          kontrol https://clinno.tr/ "200 307 308"
+          exit $hata

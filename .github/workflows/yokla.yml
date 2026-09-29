@@ -39,8 +39,8 @@ jobs:
           kontrol https://c.ontrac.tr/tr/signin "200"
           kontrol https://incuba.tr/tr "200"
           kontrol https://api.ontrac.tr/rest/v1/ "401"
-          # clinno.tr sayfasi GitHub'in IP'lerine Cloudflare bot korumasiyla
-          # 403 donuyor (29 Eyl 2026 olculdu); site ayakta. Clinno'nun
-          # ayakta oldugu API'sinin sunucudan gelen 401'iyle anlasiliyor.
-          kontrol https://api.clinno.tr/rest/v1/ "401"
+          # Clinno YOK: clinno.tr bolgesinde Cloudflare, GitHub'in IP'lerini
+          # sunucuya ulasmadan 403 ile durduruyor (sayfa da API de, 29 Eyl
+          # 2026 olculdu), yani buradan ayakta olup olmadigi anlasilamiyor.
+          # Clinno ev sunucusunda, kullanilmiyor; VDS'e tasininca eklenecek.
           exit $hata
